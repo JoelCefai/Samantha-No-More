@@ -11,7 +11,8 @@ public class CharacterSwap : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(character == null & possibleCharacters.Count >= 1)
+       
+        if (character == null & possibleCharacters.Count >= 1)
         {
             character = possibleCharacters[0];
         }
@@ -52,6 +53,7 @@ public class CharacterSwap : MonoBehaviour
     {
         character = possibleCharacters[whichCharacter];
         character.GetComponent<FirstPersonController>().enabled = true;
+
         for (int i = 0; i <possibleCharacters.Count; i++)
         {
             if(possibleCharacters[i] != character)
@@ -59,6 +61,5 @@ public class CharacterSwap : MonoBehaviour
                 possibleCharacters[i].GetComponent<FirstPersonController>().enabled = false;
             }
         }
-
     }
 }
