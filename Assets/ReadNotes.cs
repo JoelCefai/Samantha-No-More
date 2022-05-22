@@ -35,6 +35,7 @@ public class ReadNotes : MonoBehaviour
         {
             inReach = true;
             pickUpText.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
 
         }
     }
@@ -45,6 +46,7 @@ public class ReadNotes : MonoBehaviour
         {
             inReach = false;
             pickUpText.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 
