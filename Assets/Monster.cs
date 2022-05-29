@@ -1,6 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class Monster : MonoBehaviour
 {
@@ -8,12 +9,18 @@ public class Monster : MonoBehaviour
     public AudioClip[] footsounds;
     public Transform Eyes;
     public AudioSource growl;
+    public GameObject deathCam;
+    public Transform camPos;
 
     private UnityEngine.AI.NavMeshAgent nav;
     private AudioSource sound;
     private Animator anim;
     private string state = "Idle";
     private bool alive = true;
+    private float wait = 0f;
+    private bool highAlert = false;
+    private float alertness = 10f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -39,7 +46,7 @@ public class Monster : MonoBehaviour
             RaycastHit rayHit;
             if(Physics.Linecast(Eyes.position,Player.transform.position, out rayHit))
                 {
-              //print("hit" + rayHit.collider.gameObject.name);
+              print("hit" + rayHit.collider.gameObject.name);
               if(rayHit.collider.gameObject.name == "FirstPersonController")
                 {
                     if(state != "kill")
@@ -66,15 +73,44 @@ public class Monster : MonoBehaviour
             //Idle//
             if(state == "Idle")
             {
-                Vector3 randomPos = Random.insideUnitSphere * 20f;
-                UnityEngine.AI.NavMeshHit navHit;
-                UnityEngine.AI.NavMesh.SamplePosition(transform.position + randomPos, out navHit, 20f, UnityEngine.AI.NavMesh.AllAreas);
+                Vector3 randomPos = Random.insideUnitSphere * alertness;
+                NavMeshHit navHit;
+                NavMesh.SamplePosition(transform.position + randomPos, out navHit, 10f,NavMesh.AllAreas);
+
+                //Go near the Player//
+                if(highAlert)
+                {
+                    NavMesh.SamplePosition(Player.transform.position + randomPos, out navHit, 0f, NavMesh.AllAreas);
+
+                    alertness += 5f;
+
+                    if (alertness > 10f)
+                    {
+                        highAlert = false;
+                        nav.speed = 1.2f;
+                        anim.speed = 1.2f;
+                    }
+                }
+
                 nav.SetDestination(navHit.position);
                 state = "Walking";
             }
             if(state == "Walking")
             {
                 if(nav.remainingDistance <= nav.stoppingDistance && !nav.pathPending)
+                {
+                    state = "Search";
+                    wait = 5f;
+                }
+            }
+            if(state == "Search")
+            {
+                if(wait > 0f)
+                {
+                    wait -= Time.deltaTime;
+                    transform.Rotate(0f, 120f * Time.deltaTime, 0f);
+                }
+                else
                 {
                     state = "Idle";
                 }
@@ -85,6 +121,44 @@ public class Monster : MonoBehaviour
                 nav.destination = Player.transform.position;
             }
            nav.SetDestination(Player.transform.position);
+            float distance = Vector3.Distance(transform.position, Player.transform.position);
+            if(distance > 10f)
+            {
+                state = "Hunt";
+            }
+
+            else if (nav.remainingDistance <= nav.stoppingDistance && !nav.pathPending)
+            {
+                if (Player.GetComponent<PlayerSight>().alive)
+                {
+                    state = "kill";
+                    Player.GetComponent<PlayerSight>().alive = false;
+                    Player.GetComponent<FirstPersonController>().enabled = false;
+                    deathCam.SetActive(true);
+                    deathCam.transform.position = Camera.main.transform.position;
+                    deathCam.transform.rotation = Camera.main.transform.rotation;
+                    Camera.main.gameObject.SetActive(false);
+                    growl.pitch = 0.7f;
+                    growl.Play();
+                    Invoke("reset", 1f);
+                }
+            }
+
         }
+        if (state == "Hunt")
+        {
+            if (nav.remainingDistance <= nav.stoppingDistance && !nav.pathPending)
+            {
+                state = "Search";
+                wait = 5f;
+                highAlert = true;
+                alertness = 5f;
+                CheckSight();
+            }
+        }
+    }
+    private void Reset()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
