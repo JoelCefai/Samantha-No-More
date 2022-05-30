@@ -38,11 +38,7 @@ public class Doors : MonoBehaviour
         }
     }
 
-
-
-
-
-    void Update()
+    private void Update()
     {
 
         if (inReach && Input.GetButtonDown("Interact"))

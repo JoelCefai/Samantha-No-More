@@ -1,12 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
 public class Monster : MonoBehaviour
 {
     public GameObject Player;
-    public AudioClip[] footsounds;
+    public AudioClip footsounds;
     public Transform Eyes;
     public AudioSource growl;
     public GameObject deathCam;
@@ -32,11 +31,12 @@ public class Monster : MonoBehaviour
         anim.speed = 1.2f;
     }
 
-    public void footstep(int _num)
-        {
-        sound.clip = footsounds[_num];
+    public void footsteps()
+    {
+        sound.clip = footsounds;
         sound.Play();
-        }
+        Debug.Log("AudioPlayed");
+    }
 
     //check if we can see the player//
     public void CheckSight()
@@ -74,17 +74,17 @@ public class Monster : MonoBehaviour
             if(state == "Idle")
             {
                 Vector3 randomPos = Random.insideUnitSphere * alertness;
-                NavMeshHit navHit;
-                NavMesh.SamplePosition(transform.position + randomPos, out navHit, 10f,NavMesh.AllAreas);
+                UnityEngine.AI.NavMeshHit navHit;
+                UnityEngine.AI.NavMesh.SamplePosition(transform.position + randomPos, out navHit, 5f,UnityEngine.AI.NavMesh.AllAreas);
 
                 //Go near the Player//
                 if(highAlert)
                 {
-                    NavMesh.SamplePosition(Player.transform.position + randomPos, out navHit, 0f, NavMesh.AllAreas);
+                    UnityEngine.AI.NavMesh.SamplePosition(Player.transform.position + randomPos, out navHit, 20f, UnityEngine.AI.NavMesh.AllAreas);
 
                     alertness += 5f;
 
-                    if (alertness > 10f)
+                    if (alertness > 5f)
                     {
                         highAlert = false;
                         nav.speed = 1.2f;
@@ -94,9 +94,11 @@ public class Monster : MonoBehaviour
 
                 nav.SetDestination(navHit.position);
                 state = "Walking";
+
             }
             if(state == "Walking")
             {
+               
                 if(nav.remainingDistance <= nav.stoppingDistance && !nav.pathPending)
                 {
                     state = "Search";
@@ -127,7 +129,7 @@ public class Monster : MonoBehaviour
                 state = "Hunt";
             }
 
-            else if (nav.remainingDistance <= nav.stoppingDistance && !nav.pathPending)
+            else if (nav.remainingDistance <= nav.stoppingDistance + 1f && !nav.pathPending)
             {
                 if (Player.GetComponent<PlayerSight>().alive)
                 {
@@ -155,6 +157,14 @@ public class Monster : MonoBehaviour
                 alertness = 5f;
                 CheckSight();
             }
+        }
+
+        if(state == "kill")
+        {
+            deathCam.transform.position = Vector3.Slerp(deathCam.transform.position, camPos.position, 10f * Time.deltaTime);
+            deathCam.transform.rotation = Quaternion.Slerp(deathCam.transform.rotation, camPos.rotation, 10f * Time.deltaTime);
+            anim.speed = 1f;
+            nav.SetDestination(deathCam.transform.position);
         }
     }
     private void Reset()

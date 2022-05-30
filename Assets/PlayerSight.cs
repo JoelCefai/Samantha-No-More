@@ -5,7 +5,7 @@ public class PlayerSight : MonoBehaviour
 {
     public bool alive= true;
 
-    void OnTriggerEnter (Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.name == "Eyes")
         {
