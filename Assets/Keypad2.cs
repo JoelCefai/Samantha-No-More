@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using System.Collections;
 
 public class Keypad2 : MonoBehaviour
@@ -12,7 +12,19 @@ public class Keypad2 : MonoBehaviour
     public Transform doorHinge;
     public GameObject bodka;
     public AudioSource Vrzganie;
+    GUIStyle largeFont;
+    GUIStyle InputFont;
 
+
+    private void Start()
+    {
+        largeFont = new GUIStyle();
+        largeFont.normal.textColor = Color.white;
+        largeFont.fontSize = 50;
+        InputFont = new GUIStyle();
+        InputFont.normal.textColor = Color.white;
+        InputFont.fontSize = 80;
+    }
 
 
     void OnTriggerEnter(Collider other)
@@ -107,7 +119,7 @@ public class Keypad2 : MonoBehaviour
         {
             if (onTrigger)
             {
-                GUI.Box(new Rect(50, 5, 400, 50), "'E' to open keypad");
+                GUI.Box(new Rect(800, 500, 400, 50), "'E' to open keypad", largeFont);
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
@@ -118,9 +130,9 @@ public class Keypad2 : MonoBehaviour
 
             if (keypadScreen)
             {
-                GUI.Box(new Rect(0, 0, 640, 70), "");
-                GUI.Box(new Rect(10, 10, 620, 50), input);
-                GUI.Label(new Rect(10, 60, 200, 50), "'Esc' to exit");
+                GUI.Box(new Rect(0, 0, 640, 70), "", largeFont);
+                GUI.Box(new Rect(800, 10, 620, 50), input, InputFont);
+                GUI.Label(new Rect(10, 60, 200, 50), "'Esc' to exit", largeFont);
 
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
