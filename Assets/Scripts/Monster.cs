@@ -142,7 +142,7 @@ public class Monster : MonoBehaviour
                     Camera.main.gameObject.SetActive(false);
                     growl.pitch = 0.7f;
                     growl.Play();
-                    SceneManager.LoadScene(2);
+                    SceneManager.LoadScene(3);
                     Cursor.lockState = CursorLockMode.None;
                 }
             }

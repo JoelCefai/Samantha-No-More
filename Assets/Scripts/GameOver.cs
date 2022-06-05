@@ -10,6 +10,8 @@ public class GameOver : MonoBehaviour
 
     public void NewGameButton()
     {
+        Cursor.lockState = CursorLockMode.None;
+
         StartCoroutine(NewGameStart());
     }
 
