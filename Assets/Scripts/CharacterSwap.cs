@@ -5,16 +5,22 @@ using UnityEngine;
 public class CharacterSwap : MonoBehaviour
 {
     public Transform character;
+    public Transform Names;
     public List<Transform> possibleCharacters;
+    public List<Transform> NamesChange;
     public int whichCharacter;
+    public int whichCharacterName;
+    public GameObject NameUI;
 
     // Start is called before the first frame update
     void Start()
     {
        
         if (character == null & possibleCharacters.Count >= 1)
+            if (Names == null & NamesChange.Count >= 1)
         {
             character = possibleCharacters[0];
+                Names = NamesChange[0];
         }
         Swap();
     }
@@ -25,14 +31,20 @@ public class CharacterSwap : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             if(whichCharacter == 0)
-            {
-                whichCharacter = possibleCharacters.Count - 1;
-            }
+                if (whichCharacterName == 0)
 
-            else
+                {
+                    whichCharacter = possibleCharacters.Count - 1;
+                    whichCharacterName = NamesChange.Count - 1;
+
+                }
+
+                else
             {
                 whichCharacter -= 1;
-            }
+                    whichCharacterName -= 1;
+
+                }
             Swap();
         }
         if (Input.GetKeyDown(KeyCode.T))

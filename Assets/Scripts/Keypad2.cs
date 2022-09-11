@@ -30,6 +30,7 @@ public class Keypad2 : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         onTrigger = true;
+        input = "";
 
     }
 

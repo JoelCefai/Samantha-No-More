@@ -7,6 +7,7 @@ public class DoorsWithLock : MonoBehaviour
     public Animator door;
     public GameObject openText;
     public GameObject KeyINV;
+    public GameObject KeyIconUI;
 
     public AudioSource doorSound;
     public AudioSource lockedSound;
@@ -67,6 +68,7 @@ public class DoorsWithLock : MonoBehaviour
         if (hasKey && inReach && Input.GetButtonDown("Interact"))
         {
             unlocked = true;
+            KeyIconUI.SetActive(false);
             DoorOpens();
         }
 
